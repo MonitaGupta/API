@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>SKU Data</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="../static/css/my_style.css" rel="stylesheet">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    
+    
+    <script>
+        var action=0;
+        var toggle=0;    
+ 
+        var xhr;
+        var _orgAjax = jQuery.ajaxSettings.xhr;
+        jQuery.ajaxSettings.xhr = function () {
+            xhr = _orgAjax();
+            return xhr;
+        };
+ 
+        function clear(){
+            $('.showData').hide();
+            $('.showLoc').hide();
+            $('.showSKU').hide();
+            $('.showSKUForm').hide();
+            $('.showLocForm').hide();
+            $('.showDeptForm').hide();
+            $('.showCatForm').hide();
+            $('.createLocForm').hide();
+            $('.createDeptForm').hide();
+            $('.createCatForm').hide();
+            $('.createSubcatForm').hide();
+            $('.deleteLocForm').hide();
+            $('.deleteDeptForm').hide();
+            $('.deleteCatForm').hide();
+            $('.deleteSubcatForm').hide();
+            $('.updateLocForm').hide();
+            $('.updateDeptForm').hide();
+            $('.updateCatForm').hide();
+            $('.updateSubcatForm').hide();            
+            toggle=0;
+        }
+        
+        function clear_form(){
+            $('.showLoc').hide();
+            $('.showLocForm').hide();
+            $('.showDeptForm').hide();
+            $('.showCatForm').hide();
+            $('.createLocForm').hide();
+            $('.createDeptForm').hide();
+            $('.createCatForm').hide();
+            $('.createSubcatForm').hide();
+            $('.deleteLocForm').hide();
+            $('.deleteDeptForm').hide();
+            $('.deleteCatForm').hide();
+            $('.deleteSubcatForm').hide();            
+            $('.deleteSubcatForm').hide();            
+            $('.deleteSubcatForm').hide();            
+            $('.deleteSubcatForm').hide();            
+            $('.deleteSubcatForm').hide();
+            $('.updateLocForm').hide();
+            $('.updateDeptForm').hide();
+            $('.updateCatForm').hide();
+            $('.updateSubcatForm').hide();             
+            toggle=0;
+        }
+
+        $(document).ready(function () {
+            clear();
+        });
+
+        function make_base_auth(user, password) {
+            var tok = user + ':' + password;
+            var hash = btoa(tok);
+               return "Basic " + hash;
+        }        
+            
+        /*$(document).ready(function () {
+        $.ajax({
+            url: '/api/v1/location',
+            type: 'GET',
+            dataType: 'Json',
+            success: function (results) {
+                $('#dropDown').append($('<option/>').attr("value", '').text("Please Select"));
+                $.each(results, function (index, value) {
+                    $('#dropDown').append($('<option/>').attr("value", value.id).text(value.name));            
+                });
+            }
+        });
+    });*/
+    
+    //METADATA
+    //API Calls Read
+    function loc_read()
+    {
+        $('#records_table').empty();
+        $.ajax({
+            url: "/api/v1/location", 
+            type: 'GET',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (response) 
+            {   
+                var trHTML = '';
+                $.each(response, function (key,value) {
+                trHTML += 
+                '<tr><td>' + value.id + 
+                '</td><td>' + value.name + 
+                '</td></tr>';     
+                });
+                $('#records_table').append(trHTML);
+            }   
+        });
+    }   
+    
+    function dept_read(input)
+    {
+        $('#records_table').empty();
+        $.ajax({
+            url: "/api/v1/location/"+input+"/department", 
+            type: 'GET',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (response) 
+            {   
+                var trHTML = '';
+                $.each(response, function (key,value) {
+                trHTML += 
+                '<tr><td>' + value.id + 
+                '</td><td>' + value.name + 
+                '</td></tr>';     
+                });
+                $('#records_table').append(trHTML);
+            }   
+        });
+    }
+
+    function cat_read(loc_id, dept_id)
+    {
+        $('#records_table').empty();
+        $.ajax({
+            url: "/api/v1/location/"+loc_id+"/department/"+dept_id+"/category", 
+            type: 'GET',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (response) 
+            {   
+                var trHTML = '';
+                $.each(response, function (key,value) {
+                trHTML += 
+                '<tr><td>' + value.id + 
+                '</td><td>' + value.name + 
+                '</td></tr>';     
+                });
+                $('#records_table').append(trHTML);
+            }   
+        });
+    }
+
+    function subcat_read(loc_id, dept_id, cat_id)
+    {
+        $('#records_table').empty();
+        $.ajax({
+            url: "/api/v1/location/"+loc_id+"/department/"+dept_id+"/category/"+cat_id+"/subcategory", 
+            type: 'GET',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (response) 
+            {   
+                var trHTML = '';
+                $.each(response, function (key,value) {
+                trHTML += 
+                '<tr><td>' + value.id + 
+                '</td><td>' + value.name + 
+                '</td></tr>';     
+                });
+                $('#records_table').append(trHTML);
+            }   
+        });
+    }
+
+
+//API Calls Create    
+    function loc_create(name)
+    {
+        $.ajax({
+            url: "/api/v1/location/"+name, 
+            type: 'POST',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }
+    
+    function dept_create(loc_name, dept_name)
+    {
+        $.ajax({
+            url: "/api/v1/location/"+loc_name+"/department/"+dept_name, 
+            type: 'POST',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }
+
+    function cat_create(dept_name, cat_name)
+    {
+        $.ajax({
+            url: "/api/v1/department/"+dept_name+"/category/"+cat_name, 
+            type: 'POST',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }
+
+    function subcat_create(cat_name, subcat_name)
+    {
+        $.ajax({
+            url: "/api/v1/category/"+cat_name+"/subcategory/"+subcat_name, 
+            type: 'POST',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }    
+
+//API Calls Delete    
+    function loc_delete(name)
+    {
+        $.ajax({
+            url: "/api/v1/location/"+name, 
+            type: 'DELETE',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }
+    
+    function dept_delete(loc_name, dept_name)
+    {
+        $.ajax({
+            url: "/api/v1/location/"+loc_name+"/department/"+dept_name, 
+            type: 'DELETE',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }
+
+    function cat_delete(dept_name, cat_name)
+    {
+        $.ajax({
+            url: "/api/v1/department/"+dept_name+"/category/"+cat_name, 
+            type: 'DELETE',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }
+
+    function subcat_delete(cat_name, subcat_name)
+    {
+        $.ajax({
+            url: "/api/v1/category/"+cat_name+"/subcategory/"+subcat_name, 
+            type: 'DELETE',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }    
+
+//API Calls Update    
+    function loc_update(old_n, new_n)
+    {
+        $.ajax({
+            url: "/api/v1/location/"+old_n+"/"+new_n, 
+            type: 'PUT',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }
+    
+    function dept_update(old_n, new_n)
+    {
+        $.ajax({
+            url: "/api/v1/department/"+old_n+"/"+new_n, 
+            type: 'PUT',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }
+    
+    function cat_update(old_n, new_n)
+    {
+        $.ajax({
+            url: "/api/v1/category/"+old_n+"/"+new_n, 
+            type: 'PUT',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }
+    
+    function subcat_update(old_n, new_n)
+    {
+        $.ajax({
+            url: "/api/v1/subcategory/"+old_n+"/"+new_n, 
+            type: 'PUT',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (result){
+            alert(JSON.stringify(result));},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });
+    }    
+    
+    //Top Buttons    
+    
+    $(function() {
+        $('.button-work1').on('click', function() {
+            $('.showSKU').hide();
+            $('.showSKUForm').hide();
+            if(toggle == 0){
+                action = 1;
+                toggle=1;
+                $('.showData').show();
+            }
+            else{
+                clear();
+            }            
+        });
+    });
+    
+    $(function() {
+        $('.button-work2').on('click', function() {
+            $('.showSKU').hide();
+            $('.showSKUForm').hide();        
+            if(toggle == 0){
+                action = 2;
+                toggle=1;
+                $('.showData').show();
+            }
+            else{
+                clear();
+            }    
+        });
+    });
+
+    $(function() {
+        $('.button-work3').on('click', function() {
+            $('.showSKU').hide();
+            $('.showSKUForm').hide();        
+            if(toggle == 0){
+                action = 3;
+                toggle=1;
+                $('.showData').show();
+            }
+            else{
+                clear();
+            }   
+        });
+    });
+    
+    $(function() {
+        $('.button-work8').on('click', function() {
+            $('.showSKU').hide();
+            $('.showSKUForm').hide();        
+            if(toggle == 0){
+                action = 4;
+                toggle=1;
+                $('.showData').show();
+            }
+            else{
+                clear();
+            }   
+        });
+    });    
+
+    //Sub Top Buttons
+    
+    $(function() {
+        $('.button-work4').on('click', function() {
+            clear_form();
+            if(action == 1){
+                loc_read();            
+                $('.showLoc').show();
+            }
+            if(action == 2){            
+                $('.createLocForm').show();
+            }
+            if(action == 3){            
+                $('.deleteLocForm').show();
+            }
+            if(action == 4){            
+                $('.updateLocForm').show();
+            }             
+        });
+    });
+    
+    $(function() {
+        $('.button-work5').on('click', function() {
+            clear_form();
+            if(action == 1)        
+                $('.showLocForm').show();
+            if(action == 2){            
+                $('.createDeptForm').show();
+            }
+            if(action == 3){            
+                $('.deleteDeptForm').show();
+            }
+            if(action == 4){            
+                $('.updateDeptForm').show();
+            }            
+        });
+    });
+    
+    $(function() {
+        $('.button-work6').on('click', function() {
+            clear_form();
+            if(action == 1)        
+                $('.showDeptForm').show();
+            if(action == 2){            
+                $('.createCatForm').show();
+            }
+            if(action == 3){            
+                $('.deleteCatForm').show();
+            }
+            if(action == 4){            
+                $('.updateCatForm').show();
+            }            
+        });
+    });
+
+    $(function() {
+        $('.button-work7').on('click', function() {
+            clear_form();
+            if(action == 1)        
+                $('.showCatForm').show();
+            if(action == 2){            
+                $('.createSubcatForm').show();
+            }
+            if(action == 3){            
+                $('.deleteSubcatForm').show();
+            }
+            if(action == 4){            
+                $('.updateSubcatForm').show();
+            }            
+        });
+    });
+
+    //Read Submit    
+    
+    $(function() {
+        $('.showLocForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var id = $("#location_id").val();
+            dept_read(id);
+            $('.showLoc').show();
+            return false;            
+        });
+    });    
+
+    $(function() {
+        $('.showDeptForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var loc_id = $("#locationd_id").val();
+            var dept_id = $("#dept_id").val();
+            cat_read(loc_id, dept_id);
+            $('.showLoc').show();
+            return false;            
+        });
+    });  
+
+    $(function() {
+        $('.showCatForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var loc_id = $("#locationc_id").val();
+            var dept_id = $("#deptc_id").val();
+            var cat_id = $("#cat_id").val();
+            subcat_read(loc_id, dept_id,cat_id);
+            $('.showLoc').show();
+            return false;            
+        });
+    });
+
+//Create Submit
+    $(function() {
+        $('.createLocForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var name = $("#location_name").val();
+            loc_create(name);
+            return false;            
+        });
+    });    
+
+    $(function() {
+        $('.createDeptForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var loc_name = $("#locationd_name").val();
+            var dept_name = $("#dept_name").val();
+            dept_create(loc_name, dept_name);
+            return false;            
+        });
+    });
+
+    $(function() {
+        $('.createCatForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var dept_name = $("#deptc_name").val();
+            var cat_name = $("#cat_name").val();
+            cat_create(dept_name, cat_name);
+            return false;            
+        });
+    });
+
+    $(function() {
+        $('.createSubcatForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var cat_name = $("#cats_name").val();
+            var subcat_name = $("#subcat_name").val();
+            subcat_create(cat_name, subcat_name);
+            return false;            
+        });
+    });
+
+//Delete Submit
+    $(function() {
+        $('.deleteLocForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var name = $("#location_named").val();
+            loc_delete(name);
+            return false;            
+        });
+    });    
+
+    $(function() {
+        $('.deleteDeptForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var loc_name = $("#locationd_named").val();
+            var dept_name = $("#dept_named").val();
+            dept_delete(loc_name, dept_name);
+            return false;            
+        });
+    });
+
+    $(function() {
+        $('.deleteCatForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var dept_name = $("#deptc_named").val();
+            var cat_name = $("#cat_named").val();
+            cat_delete(dept_name, cat_name);
+            return false;            
+        });
+    });
+
+    $(function() {
+        $('.deleteSubcatForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var cat_name = $("#cats_named").val();
+            var subcat_name = $("#subcat_named").val();
+            subcat_delete(cat_name, subcat_name);
+            return false;            
+        });
+    });
+
+//Update Submit
+    $(function() {
+        $('.updateLocForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var old_n = $("#lold_name").val();
+            var new_n = $("#lnew_name").val();
+            loc_update(old_n, new_n);
+            return false;            
+        });
+    });
+
+    $(function() {
+        $('.updateDeptForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var old_n = $("#dold_name").val();
+            var new_n = $("#dnew_name").val();
+            dept_update(old_n, new_n);
+            return false;            
+        });
+    });
+
+    $(function() {
+        $('.updateCatForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var old_n = $("#cold_name").val();
+            var new_n = $("#cnew_name").val();
+            cat_update(old_n, new_n);
+            return false;            
+        });
+    });
+
+    $(function() {
+        $('.updateSubcatForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var old_n = $("#sold_name").val();
+            var new_n = $("#snew_name").val();
+            subcat_update(old_n, new_n);
+            return false;            
+        });
+    });
+
+    //SKU
+    //API Calls Read
+    function SKU_read(loc_n, dept_n, cat_n, subcat_n)
+    {
+        $('#sku_records_table').empty();
+        $.ajax({
+            url: "/api/v1/"+loc_n+"/"+dept_n+"/"+cat_n+"/"+subcat_n+"/get_sku", 
+            type: 'GET',    
+            dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },            
+            success: function (response) 
+            {   
+                var trHTML = '';
+                $.each(response, function (key,value) {
+                trHTML += 
+                '<tr><td>' + value.id + 
+                '</td><td>' + value.sku_id + 
+                '</td></tr>';     
+                });
+                $('#sku_records_table').append(trHTML);
+            }   
+        });
+    }
+
+    //SKU Button
+    $(function() {
+        $('.button-work9').on('click', function() {
+            clear();            
+            $('.showSKUForm').show();             
+        });
+    });
+
+    //SKU Submit
+    $(function() {
+        $('.showSKUForm').on('submit', function(e) {
+            if(e) e.preventDefault();
+            var loc_n = $("#skulocation_n").val();
+            var dept_n = $("#skudept_n").val();
+            var cat_n = $("#skucat_n").val();
+            var subcat_n = $("#skusubcat_n").val();            
+            SKU_read(loc_n, dept_n, cat_n, subcat_n);
+            $('.showSKU').show();
+            return false;            
+        });
+    });    
+        
+    </script>
+</head>
+<body>
+<style> 
+* {
+    box-sizing: border-box;
+}
+</style>
+
+
+<div class="header">
+  <h1>METADATA</h1>
+  <p> Create,Read,Update And Delete Your Data.. </P>
+</div>
+
+</body>
+    <div>
+        <p style="text-align:center">
+        </p>
+    </div>
+
+    <div  class="btn-group">
+        <button class="button-work1" type="button">Read</button>
+        <button class="button-work2" type="button">Create</button>
+        <button class="button-work3" type="button">Delete</button>
+        <button class="button-work8" type="button">Update</button>        
+        <p style="text-align:center">
+        </p>
+    </div>
+
+    <div class="ul-group">    
+        <ul class="showData">
+            <li><button class="button-work4" type="button">Location</button></li>
+            <li><button class="button-work5" type="button">Department</button></li>
+            <li><button class="button-work6" type="button">Category</button></li>
+            <li><button class="button-work7" type="button">SubCategory</button></li>
+        </ul>
+    </div>
+
+    <form class="showLocForm">
+      Location_id:
+      <input type="text" id="location_id" value="0">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="showDeptForm">
+      Location_id:
+      <input type="text" id="locationd_id" value="0">
+      Department_id:
+      <input type="text" id="dept_id" value="0">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="showCatForm">
+      Location_id:
+      <input type="text" id="locationc_id" value="0">
+      Department_id:
+      <input type="text" id="deptc_id" value="0">
+      Category_id:
+      <input type="text" id="cat_id" value="0">
+      <input type="submit" value="Submit">
+    </form>    
+
+    <form class="createLocForm">
+      Location_name:
+      <input type="text" id="location_name" value="location">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="createDeptForm">
+      Location_name:
+      <input type="text" id="locationd_name" value="location">
+      Department_name:
+      <input type="text" id="dept_name" value="department">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="createCatForm">
+      Department_name:
+      <input type="text" id="deptc_name" value="department">
+      Category_name:
+      <input type="text" id="cat_name" value="category">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="createSubcatForm">
+      Category_name:
+      <input type="text" id="cats_name" value="category">
+      SubCategory_name:
+      <input type="text" id="subcat_name" value="subcategory">
+      <input type="submit" value="Submit">
+    </form>   
+
+    <form class="deleteLocForm">
+      Location_name:
+      <input type="text" id="location_named" value="location">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="deleteDeptForm">
+      Location_name:
+      <input type="text" id="locationd_named" value="location">
+      Department_name:
+      <input type="text" id="dept_named" value="department">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="deleteCatForm">
+      Department_name:
+      <input type="text" id="deptc_named" value="department">
+      Category_name:
+      <input type="text" id="cat_named" value="category">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="deleteSubcatForm">
+      Category_name:
+      <input type="text" id="cats_named" value="category">
+      SubCategory_name:
+      <input type="text" id="subcat_named" value="subcategory">
+      <input type="submit" value="Submit">
+    </form>    
+
+    <form class="updateLocForm">
+      Old value:
+      <input type="text" id="lold_name" value="location">
+      New value:
+      <input type="text" id="lnew_name" value="location">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="updateDeptForm">
+      Old value:
+      <input type="text" id="dold_name" value="department">
+      New value:
+      <input type="text" id="dnew_name" value="department">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="updateCatForm">
+      Old value:
+      <input type="text" id="cold_name" value="category">
+      New value:
+      <input type="text" id="cnew_name" value="category">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form class="updateSubcatForm">
+      Old value:
+      <input type="text" id="sold_name" value="subcategory">
+      New value:
+      <input type="text" id="snew_name" value="subcategory">
+      <input type="submit" value="Submit">
+    </form>    
+   
+    <table class="showLoc" id="records_table" border='1'>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+        </tr>
+    </table>
+
+    <div class="header">
+    <h1>SKU</h1>
+    <p> Get SKU Of Your Data.. </P>
+    </div>
+    
+    <div  class="btn-group">
+        <button class="button-work9" type="button">SKU</button>
+    </div>
+
+    <form class="showSKUForm">
+      Location_id:
+      <input type="text" id="skulocation_n" value="location">
+      Department_id:
+      <input type="text" id="skudept_n" value="department">
+      Category_id:
+      <input type="text" id="skucat_n" value="category">
+      Subcategory_id:
+      <input type="text" id="skusubcat_n" value="subcategory">      
+      <input type="submit" value="Submit">
+    </form>
+
+    <table class="showSKU" id="sku_records_table" border='1'>
+        <tr>
+            <th align="center" width="50">Id</th>
+            <th align="center" width="100">Name</th>
+        </tr>
+    </table>    
+    
+<!--body>    
+    <select id="dropDown">
+    </select>
+</body-->
+ 
+</html>
