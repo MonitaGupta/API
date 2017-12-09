@@ -1,0 +1,140 @@
+.header {
+    background-color: #f1f1f1;
+    padding: 20px;
+    text-align: center;
+}
+
+#signin ul {
+	list-style-type: none;
+	display: block;
+	padding: 5px;
+	margin: 0;
+	text-align: right;
+	color: blue;
+	width: 100%; 
+	float: right;
+}
+
+#signin li {
+	display: inline;
+	padding : 10px;
+}
+
+#signin h3 {
+	color : black;
+	font-size:50px;
+}
+
+.btn-group{
+    padding: 10px;
+    margin: auto;
+    width: auto;
+    height: auto;
+    display: table;
+    text-align:center;
+    overflow: hidden;
+}
+.btn-group button {
+    background-color: #4CAF50; /* Green background */
+    border: 1px solid grey; /* Green border */
+    color: white; /* White text */
+    padding: 10px 150px; /* Some padding */
+    cursor: pointer; /* Pointer/hand icon */
+    float: left; /* Float the buttons side by side */
+}
+
+.btn-group button:not(:last-child) {
+    border-right: none; /* Prevent double borders */
+}
+
+/* Clear floats (clearfix hack) */
+.btn-group:after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* Add a background color on hover */
+.btn-group button:hover {
+    background-color: #3e8e41;
+}
+
+.ul-group{
+    padding: 30px;
+    margin-left: 110px;
+    margin-top: 20px;
+    width: auto;
+    height: auto;
+    display: table;
+    text-align:center;
+}
+
+.ul-group ul {
+	list-style-type: none;
+	display: block;
+	padding: 5px;
+	margin: 0;
+	text-align: center;
+	color: blue;
+	width: 100%; 
+}
+
+.ul-group li {
+    background-color: #F5F5F5; /* Green background */
+    border: #F5F5F5; /* Green border */
+    color: white; /* White text */
+    width: auto;
+    text-align: left;
+}
+
+.ul-group li button {
+    background-color: grey;
+    border: 1px light grey; /* Green border */
+    color: white; /* White text */
+    width: 110px;
+    padding: 10px 180px;
+    cursor: pointer; /* Pointer/hand icon */
+    text-align: left;
+    
+}
+
+.ul-group button:not(:last-child) {
+    border-right: none; /* Prevent double borders */
+    text-align: left;
+}
+
+/* Clear floats (clearfix hack) */
+.ul-group:after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* Add a background color on hover */
+.ul-group button:hover {
+    background-color: #3e8e41;
+}
+
+
+.showLoc , .showSKU{
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+}
+
+.showLoc td, .showLoc th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.showloc tr:nth-child(even){background-color: #f2f2f2;}
+
+.showLoc tr:hover {background-color: #ddd;}
+
+.showLoc th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
