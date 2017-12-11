@@ -1,0 +1,15 @@
+﻿INSTALLATION GUIDE
+Python:
+* Install python - https://www.python.org/ftp/python/3.7.0/python-3.7.0a2-amd64.exe          
+* Got to cmd -> python directory 
+* Pip install virtualenv   (Virtual Env Installation)
+* Virtualenv flask
+* (flask) C:\python\flask\Scripts>activate
+* (flask) C:\python > pip install flask flask-jsonpify flask-sqlalchemy flask-restful   apscheduler flask_httpauth passlib  
+* pip freeze
+* Python Version : Python 3.7.0a2 (v3.7.0a2:f7ac4fe, Oct 17 2017, 17:06:29) [MSC v.1900 64 bit (AMD64)] on win32
+
+Sqlite3:
+* Sqlite3 link -  https://www.sqlite.org/2017/sqlite-tools-win32-x86-3210000.zip
+* sqlite3.exe project_inmar.db
+* Sqlite version 3.21.0
