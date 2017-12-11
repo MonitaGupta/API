@@ -734,13 +734,34 @@
             var loc_n = $("#skulocation_n").val();
             var dept_n = $("#skudept_n").val();
             var cat_n = $("#skucat_n").val();
-            var subcat_n = $("#skusubcat_n").val();            
+        
+        var subcat_n = $("#skusubcat_n").val();            
             SKU_read(loc_n, dept_n, cat_n, subcat_n);
             $('.showSKU').show();
             return false;            
         });
     });    
-        
+
+    
+    //Tree API
+    function show_tree()
+    {
+        $.ajax({
+            url: "api/v1/showjsontree",     
+            dataType:"json",
+            success: function (result){
+            window.location = xhr.getResponseHeader('Location');},
+            error: function (result){
+            alert(JSON.stringify(result));},
+        });    
+    }    
+    
+    //Tree Button
+    $(function() {
+        $('.button-work10').on('click', function() {
+            show_tree();            
+        });
+    });    
     </script>
 </head>
 <body>
@@ -929,7 +950,16 @@
             <th align="center" width="50">Id</th>
             <th align="center" width="100">Name</th>
         </tr>
-    </table>    
+    </table>
+    
+    <div class="header">
+    <h1>GRAPHICAL REPRESENTATION</h1>
+    <p> Get Graphical Representation Of Metadata.. </P>
+    </div>
+    
+    <div  class="btn-group">
+        <button class="button-work10" type="button">Show Metadata Tree</button>
+    </div>    
     
 <!--body>    
     <select id="dropDown">
