@@ -204,6 +204,7 @@ def build_leaf(name, leaf):
     return res
 
 @app.route('/api/v1/showjsontree')
+@auth.login_required
 def showjsontree():    
     return jsonify('Tree'), 200, {'Location': '/showtree'}
     
@@ -485,5 +486,5 @@ def update_subcat(old_name, new_name):
     return jsonify('Entry Updated'), 200    
     
 if __name__ == '__main__':
-     app.run(port='5002')
+     app.run(port=5002)
      
