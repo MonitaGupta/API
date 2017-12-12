@@ -734,8 +734,7 @@
             var loc_n = $("#skulocation_n").val();
             var dept_n = $("#skudept_n").val();
             var cat_n = $("#skucat_n").val();
-        
-        var subcat_n = $("#skusubcat_n").val();            
+            var subcat_n = $("#skusubcat_n").val();            
             SKU_read(loc_n, dept_n, cat_n, subcat_n);
             $('.showSKU').show();
             return false;            
@@ -749,6 +748,10 @@
         $.ajax({
             url: "api/v1/showjsontree",     
             dataType:"json",
+            beforeSend: function (xhr) {
+                if(sessionStorage.getItem("email") != null)
+                    xhr.setRequestHeader('Authorization', make_base_auth(sessionStorage.getItem("email"), sessionStorage.getItem("pwd")));
+            },
             success: function (result){
             window.location = xhr.getResponseHeader('Location');},
             error: function (result){
