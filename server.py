@@ -26,7 +26,7 @@ parser.add_option("-l", "--log-level", dest="loglevel", default="INFO",
 auth = HTTPBasicAuth()
 
 app = Flask(__name__)
-api = Api(app)
+#api = Api(app)
 
 def mkdir_p(path):
     try:
@@ -56,10 +56,9 @@ def create_new_log_file():
     current_datetime = time.strftime('%Y-%m-%d-HOUR-%H.log')   
     logging.FileHandler('log/'+current_datetime, mode='a')
     
-    list_of_files = os.listdir('log')    
+    list_of_files = os.listdir('log') 
     full_path = ["log/{0}".format(x) for x in list_of_files]
-    
-    if len([name for name in list_of_files]) == 25:
+    if len(list_of_files) == 25:
         oldest_file = min(full_path, key=os.path.getctime)
         os.remove(oldest_file)    
 
@@ -190,17 +189,16 @@ def showSignUp():
 def showSignIp():
     return render_template('sign_in.html')
 
-def ctree():
-    return defaultdict(ctree)
+def list():
+    return defaultdict(list)
 
 
 def build_leaf(name, leaf):
     res = {"name": name}
 
-    # add children node if the leaf actually has any children
+    # Example : {'name': 'Cultured', 'children': [{'name': 'Cottage Cheese'}]}
     if len(leaf.keys()) > 0:
         res["children"] = [build_leaf(k, v) for k, v in leaf.items()]
-
     return res
 
 @app.route('/api/v1/showjsontree')
@@ -222,14 +220,14 @@ def metadata():
     outfile = open('csv/output.csv', 'w')
     outcsv = csv.writer(outfile)
 
-    cursor = g.db.execute('SELECT "Metadata", l.name, d.name, c.name, s.name  FROM location l join department d on l.id = d.loc_id join category c \
-                           on d.id = c.dept_id join subcategory s on c.id = s.cat_id;')
+    cursor = g.db.execute('SELECT "Metadata", l.name, d.name, c.name, s.name  FROM location l left join department d on l.id = d.loc_id left join category c \
+                           on d.id = c.dept_id left join subcategory s on c.id = s.cat_id;')
 
 
     outcsv.writerows(cursor)
     outfile.close()        
 
-    tree = ctree()
+    tree = list()
     # NOTE: you need to have test.csv file as neighbor to this file
     with open('csv/output.csv') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -239,13 +237,15 @@ def metadata():
                 # basically grouping csv values under their parents
                 leaf = tree[row[0]]
                 for cid in range(1, len(row)):
-                    leaf = leaf[row[cid]]
-
+                    if row[cid] != "":
+                        leaf = leaf[row[cid]]
+                    
     # building a custom tree structure
-    res = []
+    res = []  #creates an empty list
+    # Example showing content of leaf{'Perimeter':, {'Bakery':, {'Bakery Bread':, {'Bagels':, {}, 'Baking or Breading Products':, {}, 'English Muffins or Biscuits':, {}, 'Flatbreads':, {}}....
     for name, leaf in tree.items():
         res.append(build_leaf(name, leaf))
-    
+        # converting list objects to json format
     return jsonify(res)    
 
 @app.route('/api/v1/location')
